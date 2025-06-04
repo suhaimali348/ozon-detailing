@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login page for OZON DETAILING with real-time updates">
+    <title>Login - OZON DETAILING</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="images/transport.png">
+    <!-- Supabase Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- PWA Support -->
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.8rem;
+        }
+
+        header h1 a i {
+            margin-right: 0.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #34495e;
+        }
+
+        nav ul li a.active {
+            background-color: #3498db;
+        }
+
+        nav ul li a i {
+            margin-right: 0.3rem;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            width: 100%;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .form-container h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        #message-area {
+            margin-bottom: 1.5rem;
+            min-height: 2rem;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-group input.invalid,
+        .form-group input:invalid:not(:focus) {
+            border-color: #e74c3c;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 0.75rem;
+            top: 2.2rem;
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .form-link {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .form-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .form-link a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            display: inline-block;
+            padding: 0.75rem;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button i {
+            margin-right: 0.5rem;
+        }
+
+        #last-login {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #2c3e50;
+            color: white;
+            margin-top: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            header h1 a {
+                font-size: 1.5rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul li a {
+                padding: 0.5rem;
+                width: 100%;
+                text-align: left;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .form-container h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header role="banner">
+        <h1><a href="index.html"><i class="fas fa-car"></i> OZON DETAILING</a></h1>
+        <nav aria-label="Main navigation">
+            <ul>
+                <li><a href="login.html" class="active"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                <li><a href="signup.html"><i class="fas fa-user-plus"></i> Sign Up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main role="main">
+        <div class="form-container">
+            <h2>Login</h2>
+            <div id="message-area" aria-live="polite"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" required aria-required="true">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" required aria-required="true">
+                </div>
+                <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+                <p class="form-link">Don't have an account? <a href="signup.html">Sign up here</a></p>
+            </form>
+            <p id="last-login" aria-live="polite"></p>
+        </div>
+    </main>
+
+    <footer role="contentinfo">
+        <p>© 2025 OZON DETAILING</p>
+    </footer>
+
+    <script>
+        // Initialize Supabase with provided credentials
+        const SUPABASE_URL = 'https://iycpxoimcgrrxpjmwkow.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Y3B4b2ltY2dycnhwam13a293Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNDcxMjcsImV4cCI6MjA2NDYyMzEyN30.IFOR-7_bWDEJSuNH_PykTCKF6iustr7P3Be6GjuBQ14';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const submitButton = loginForm?.querySelector('button[type="submit"]');
+            const lastLoginDisplay = document.getElementById('last-login');
+
+            function showMessage(type, message, areaId = 'message-area') {
+                const area = document.getElementById(areaId);
+                if (!area) return;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message message-${type}`;
+                messageDiv.textContent = message;
+                area.appendChild(messageDiv);
+                setTimeout(() => { messageDiv.remove(); }, 5000);
+            }
+
+            function clearMessages(areaId = 'message-area') {
+                const area = document.getElementById(areaId);
+                if (area) area.innerHTML = '';
+            }
+
+            // Check if user is already logged in
+            async function checkSession() {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    showMessage('success', 'You are already logged in! Redirecting...');
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                }
+            }
+            checkSession();
+
+            // Real-time subscription for last login
+            async function subscribeToLastLogin() {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    supabase
+                        .channel('user_logins')
+                        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'user_logins', filter: `user_id=eq.${user.id}` }, (payload) => {
+                            const lastLogin = payload.new.last_login ? new Date(payload.new.last_login).toLocaleString() : 'No login recorded';
+                            lastLoginDisplay.textContent = `Last Login: ${lastLogin}`;
+                        })
+                        .subscribe();
+                }
+            }
+
+            // Fetch initial last login
+            async function fetchLastLogin() {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data, error } = await supabase.from('user_logins').select('last_login').eq('user_id', user.id).single();
+                    if (data && !error) {
+                        const lastLogin = data.last_login ? new Date(data.last_login).toLocaleString() : 'No login recorded';
+                        lastLoginDisplay.textContent = `Last Login: ${lastLogin}`;
+                    }
+                }
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    clearMessages();
+                    const email = document.getElementById('email').value.trim().toLowerCase();
+                    const password = document.getElementById('password').value;
+
+                    if (!email || !password) {
+                        showMessage('error', 'Please enter both email and password.');
+                        return;
+                    }
+
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Logging in...';
+
+                    // Supabase Auth login
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+                    if (error) {
+                        showMessage('error', error.message || 'Invalid email or password.');
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Login';
+                    } else {
+                        // Update last login in Supabase
+                        const { user } = data;
+                        await supabase.from('user_logins').upsert([
+                            { user_id: user.id, last_login: new Date().toISOString() }
+                        ]);
+                        showMessage('success', 'Login successful! Redirecting...');
+                        subscribeToLastLogin();
+                        fetchLastLogin();
+                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                    }
+                });
+            }
+
+            // PWA Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.error('Service Worker Error:', err));
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "OZON DETAILING",
+  "short_name": "OZON",
+  "start_url": "/login.html",
+  "display": "standalone",
+  "background_color": "#f4f6f9",
+  "theme_color": "#2c3e50",
+  "icons": [
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
