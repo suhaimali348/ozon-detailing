@@ -4,8 +4,8 @@ self.addEventListener('install', (event) => {
       return cache.addAll([
         '/',
         '/login.html',
-        '/index.html',
         '/signup.html',
+        '/index.html',
         '/dashboard.html',
         '/images/transport.png',
         '/images/icon-192x192.png',
